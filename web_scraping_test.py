@@ -7,12 +7,18 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+def url_converter(input_string):
+    return input_string.lower().replace(" ", "-")
 
-driver = webdriver.Chrome()
+options = webdriver.ChromeOptions()
+options.add_argument('--headless')
 
-station = "london-liverpool-street"
+driver = webdriver.Chrome(options = options)
 
-driver.get(f"https://www.nationalrail.co.uk/live-trains/departures/{station.lower()}/")
+
+station = "london liVerPool StreeT"
+
+driver.get(f"https://www.nationalrail.co.uk/live-trains/departures/{url_converter(station)}/")
 
 
 try:
