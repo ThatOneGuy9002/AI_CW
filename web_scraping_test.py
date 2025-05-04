@@ -30,6 +30,53 @@ def cookie_watch(driver):
     except:
         print("No cookie banner found or timed out.")
 
+def station_to_station(from_station,to_station):
+    driver = create_driver()
+    driver.get(f"https://www.nationalrail.co.uk/live-trains/departures/{url_converter(from_station)}/{url_converter(to_station)}/")
+
+    cookie_watch(driver)
+    section = driver.find_element(By.ID, "grid-live-trains-results")
+
+
+    ul_element = WebDriverWait(section, 10).until(
+        EC.presence_of_element_located((By.TAG_NAME, "ul"))
+    )
+    li_elements = ul_element.find_elements(By.TAG_NAME, "li")
+
+
+
+    for i, li in enumerate(li_elements, start=0):\
+    
+        station_title = li.find_element(By.CLASS_NAME, "cwnatJ").text
+        arrival_time = li.find_element(By.CLASS_NAME, "bVsjOO").text
+        try:
+            on_time = li.find_element(By.CLASS_NAME, "gOVYjf").text
+        except:
+            on_time = False
+        try:
+            late = li.find_element(By.CLASS_NAME, "HkKYv").text
+        except:
+            late = False
+        platform_number = li.find_element(By.CLASS_NAME, "iXOvam").text
+
+        train_info = {
+            "from" : station,
+            "to" : station_title,
+            "leave_time" : arrival_time,
+            "on_time" : on_time,
+            "late" : late,
+            "platform_number" : platform_number
+        }
+        
+        print(train_info["from"])
+        print(train_info["to"])
+        print(train_info["leave_time"])
+        print(train_info["on_time"])
+        print(train_info["late"])
+        print(train_info["platform_number"])
+
+    driver.close()
+
 # Looks up a station based on url and prints out a dict about what trains are departing the station
 def all_departures(station):
     driver = create_driver()
@@ -82,3 +129,4 @@ station = "london liVerPool StreeT"
 
 all_departures(station)
 all_departures("norwich")
+station_to_station(station,"rayleigh")
