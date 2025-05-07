@@ -6,12 +6,25 @@ st.set_page_config(page_title="ChatBot", layout= "centered")
 st.title("Chatbot")
 st.caption("Find train tickets, delays - all through chat")
 
+st.sidebar.header("Convos")
+
+selected = st.sidebar.radio(
+    "Select a conversation",
+    options=["1"],
+    label_visibility="collapsed"
+)
+
 if "message" not in st.session_state:
     st.session_state.chat = get_history()
 
 for message in st.session_state.chat:
+    time = message.get("timestamp")
+
+    fTime = time.strftime("%Y-%m-%d %H:%M")
+
+    text = f"{message['text']}  \n*{fTime}*"
     with st.chat_message(message["role"]):
-        st.markdown(message["text"])
+        st.markdown(text)
 
 user_input = st.chat_input("You: ")
 
