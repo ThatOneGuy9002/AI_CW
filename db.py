@@ -9,16 +9,8 @@ db = myClient["chatbotDB"]
 stations = db["stations"]
 messages = db["conversation_history"]
 
-def create_message(role, text):
-    messages.insert_one({
-        "conversation_id": 1,
-        "role": role,
-        "text": text,
-        "timestamp": datetime.utcnow()
-    })
-
-def get_history():
-    history = messages.find().sort("timestamp", 1)
+def get_history(conversation_id):
+    history = messages.find({"conversation_id": conversation_id}).sort("timestamp", 1)
     return [
         {
             "role": h.get("role", "user"),
@@ -27,6 +19,24 @@ def get_history():
         }
         for h in history
     ]
+
+def create_message(role, text, conversation_id):
+    messages.insert_one({
+        "conversation_id": conversation_id,
+        "role": role,
+        "text": text,
+        "timestamp": datetime.utcnow()
+    })
+
+# Convo functions
+
+def get_convos():
+    return messages.distinct("conversation_id")
+
+def delete_convo(id):
+    messages.delete_many({"conversation_id": id})
+    
+
 # stations.insert_one({
 #     "code": "NRW",
 #     "name": "Norwich",
