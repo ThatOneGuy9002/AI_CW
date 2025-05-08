@@ -28,6 +28,7 @@ st.sidebar.header("Convos")
 if st.sidebar.button("Start New Conversation"):
     create_convo()
 
+# Button for deleting current selected conversation
 if st.sidebar.button("Delete conversation"):
     db.delete_convo(st.session_state.conversation_id)
     create_convo()
@@ -63,18 +64,34 @@ for message in st.session_state.chat:
     with st.chat_message(message["role"]):
         st.markdown(text)
 
+# Quick prompts 
+
+column1, column2 = st.columns(2)    
+
+prompt = None
+
+if column1.button("Cheapest Norwich -> London"):
+    prompt = "What's the cheapest ticket from Norwich to London"
+
+if column2.button("Delay from Liverpool Street?"):
+    prompt = "Is my train delayed from Liverpool Street?"
+
 user_input = st.chat_input("You: ")
 
-# Creating messages in database, from convo
-if user_input:
-    st.chat_message("user").markdown(user_input)
-    st.session_state.chat.append({"role": "user", "text": user_input})
-    db.create_message("user", user_input, st.session_state["conversation_id"])
+if user_input: 
+    prompt = user_input
 
-    if user_input.lower() in ["exit", "quit", "bye"]:
+# Creating messages in database, from convo
+if prompt:
+
+    st.chat_message("user").markdown(prompt)
+    st.session_state.chat.append({"role": "user", "text": prompt})
+    db.create_message("user", prompt, st.session_state["conversation_id"])
+
+    if prompt.lower() in ["exit", "quit", "bye"]:
         response = "Chatbot: Goodbye!"
     else:
-        response = f"Chatbot: You said '{user_input}'"
+        response = f"Chatbot: You said '{prompt}'"
 
     st.chat_message("assistant").markdown(response)
     st.session_state.chat.append({"role": "assistant", "text": response})
